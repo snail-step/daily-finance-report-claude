@@ -75,8 +75,8 @@ Generate a Markdown file with this exact structure:
   - 在英文原文下面，翻譯一個中文版（英文保留不刪）
 
 ## 📊 Price snapshot
-| Asset | Price | 1D % | Signal |
-|-------|-------|------|--------|
+| Asset (Ticker) | Fund Name | Price | 1D % | Signal |
+|-------|-----------|-------|------|--------|
 (fill from PRICES + signals)
 
 ## 📰 News highlights
