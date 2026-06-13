@@ -1,3 +1,9 @@
+## Pre-flight check — Monday extended window
+If today is **Monday** (Taiwan Time, UTC+8): expand **all** news search windows to **72 hours** (covering Friday–Monday). Replace every mention of "past 18 hours" with "past 72 hours" for today only.
+All other weekdays: proceed normally with 18-hour news windows.
+
+---
+
 Step 1 — Price snapshot
 Using the FMP MCP, fetch the CURRENT price and 1-day % change for:
   US broad ETFs  : SPY, VT, VEA, IWY, SPMO
@@ -9,10 +15,20 @@ Using the FMP MCP, fetch the CURRENT price and 1-day % change for:
   Taiwan stocks  : 2330.TW, 2454.TW, 2464.TW
   Taiwan index   : ^TWII (TAIEX)
 
-Store all values in a variable called PRICES.
-If FMP cannot fetch a ticker, call web_search("{TICKER} current price") as fallback.
+**Fallback rule (applies to every ticker automatically):**
+After each FMP fetch, evaluate the result:
+- If price is null / N/A / empty → **stale or unsupported**
+- If the price timestamp is older than 3 trading days → **stale**
 
-Step 2A — Macro & Sector Trends (past 18 hours only)
+For any stale/unsupported result, run a web search fallback:
+- Taiwan-listed tickers (suffix `.TW`): `web_search("{TICKER} 股價 site:tw.stock.yahoo.com OR site:cnyes.com")`
+- All other tickers: `web_search("{TICKER} current price")`
+
+Extract the most recent price and its date from the search result. In the report, always label the source and date for any fallback price (e.g. "NT$113.50 as of 2026-06-13 (web)").
+
+Store all values in a variable called PRICES.
+
+Step 2A — Macro & Sector Trends (past 18 hours only, or 72 hours on Monday)
 Run these broad market searches in parallel:
 
 a) "crypto regulation bitcoin DeFi market"
@@ -25,7 +41,7 @@ g) "energy ETF oil gas prices"
 h) "Taiwan semiconductor TSMC MediaTek"
 
 
-Step 2B — Position-Specific News (past 18 hours only)
+Step 2B — Position-Specific News (past 18 hours only, or 72 hours on Monday)
 Run these ticker-focused searches in parallel:
 
 1) "SPY S&P 500 market news"
@@ -52,14 +68,21 @@ For each category, extract:
   - Confidence: HIGH / MED / LOW
   - 在英文原文下面，翻譯一個中文版（英文保留不刪）
 
-Skip any result older than 18 hours. If nothing is found, write "No material news."
+Skip any result older than 18 hours (or 72 hours on Monday). If nothing is found, write "No material news."
 
 Step 3 — Decision signal
-For each position, combine price data from Step 1 and sentiment from Step 2.
-Output a single signal:
-  🟢 HOLD / ADD  — thesis intact, no new risk
-  🟡 WATCH       — new development worth monitoring; no action yet
-  🔴 REVIEW      — material negative change; consider reducing or hedging
+For each position, combine price data from Step 1 and news sentiment from Step 2 using these rules:
+
+**Signal logic (apply the highest-severity rule that matches):**
+
+| Condition | Signal |
+|-----------|--------|
+| BEARISH sentiment (HIGH or MED confidence) **OR** 1D price change ≤ −3% **OR** thesis-breaking news | 🔴 REVIEW |
+| NEUTRAL sentiment **OR** BULLISH with LOW confidence **OR** −1% < 1D price ≤ −3% **OR** notable new development with unclear impact | 🟡 WATCH |
+| BULLISH sentiment (HIGH or MED confidence) **AND** 1D price change > −1% **AND** no new material risk | 🟢 HOLD/ADD |
+| Insufficient data (price N/A and no news) | 🟡 WATCH (default; note data gap) |
+
+If the 1D price change is unavailable (N/A), weight sentiment alone and note the data gap.
 
 Also output one "Focus today" item: the single asset most likely to require attention today, with a one-line reason.
 
