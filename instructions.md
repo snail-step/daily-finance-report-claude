@@ -106,41 +106,41 @@ Generate a Markdown file with this exact structure:
   - 關於以下內容：在英文原文下面，翻譯一個中文版（英文保留不刪）
 
 ### Macro & Sector Trends
-### a) "crypto regulation bitcoin DeFi market"
-### b) "AI capex data center chips market"
-### c) "defense space satellite contracts"
-### d) "Fed rates Taiwan semiconductor macro"
-### e) "global ETF flows VT VEA"
-### f) "gold ETF dollar inflation"
-### g) "energy ETF oil gas prices"
-### h) "Taiwan semiconductor TSMC MediaTek"
+#### a) "crypto regulation bitcoin DeFi market"
+#### b) "AI capex data center chips market"
+#### c) "defense space satellite contracts"
+#### d) "Fed rates Taiwan semiconductor macro"
+#### e) "global ETF flows VT VEA"
+#### f) "gold ETF dollar inflation"
+#### g) "energy ETF oil gas prices"
+#### h) "Taiwan semiconductor TSMC MediaTek"
 
 ### Position Highlights
-### SPY / VT / VEA / IWY / SPMO — {signal}
+#### SPY / VT / VEA / IWY / SPMO — {signal}
 {summary}
 
-### NASA / UFO — {signal}
+#### NASA / UFO — {signal}
 {summary}
 
-### IAU / GLD — {signal}
+#### IAU / GLD — {signal}
 {summary}
 
-### XLE / VDE — {signal}
+#### XLE / VDE — {signal}
 {summary}
 
-### GOOG / ORCL / LHX / PURR — {signal}
+#### GOOG / ORCL / LHX / PURR — {signal}
 {summary}
 
-### BTC  — {BULLISH/NEUTRAL/BEARISH}
+#### BTC  — {BULLISH/NEUTRAL/BEARISH}
 {1–2 sentence summary}
 
-### USD/TWD / DXY — {signal}
+#### USD/TWD / DXY — {signal}
 {summary}
 
-### 0050.TW / 00910.TW / 00947.TW — {signal}
+#### 0050.TW / 00910.TW / 00947.TW — {signal}
 {summary}
 
-### 2330.TW / 2454.TW / 2464.TW — {signal}
+#### 2330.TW / 2454.TW / 2464.TW — {signal}
 {summary}
 
 ... (repeat for all tracked assets) ...
