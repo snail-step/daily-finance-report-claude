@@ -7,8 +7,8 @@ All other weekdays: proceed normally with 18-hour news windows.
 Step 1 — Price snapshot
 Using the FMP MCP, fetch the CURRENT price and 1-day % change for:
   US broad ETFs  : SPY, VT, VEA, IWY, SPMO
-  US sector ETFs : NASA, UFO, IAU, GLD, XLE, VDE
-  US equities    : GOOG, ORCL, LHX, PURR
+  US sector ETFs : NASA, UFO, IAU, GLD, XLE, VDE, SPCX
+  US equities    : GOOG, ORCL, LHX, PURR, AAPL
   Crypto         : BTC/USD
   FX             : USD/TWD, DXY (US Dollar Index)
   Taiwan ETFs    : 0050.TW, 00910.TW, 00947.TW
@@ -51,9 +51,11 @@ Run these ticker-focused searches in parallel:
 5) "IAU GLD gold ETF news"
 6) "XLE VDE energy ETF news"
 7) "GOOG Alphabet AI news"
+7b) "AAPL Apple earnings product news"
 8) "ORCL Oracle earnings guidance"
 9) "LHX defense contract news"
 10) "PURR HYPE Hyperliquid news"
+10b) "SPCX SPAC new issue ETF news"
 11) "BTC bitcoin overnight news"
 12) "USD TWD dollar policy Fed"
 13) "TAIEX Taiwan stock market news"
@@ -128,7 +130,10 @@ Generate a Markdown file with this exact structure:
 #### XLE / VDE — {signal}
 {summary}
 
-#### GOOG / ORCL / LHX / PURR — {signal}
+#### GOOG / ORCL / LHX / PURR / AAPL — {signal}
+{summary}
+
+#### SPCX — {signal}
 {summary}
 
 #### BTC  — {BULLISH/NEUTRAL/BEARISH}
