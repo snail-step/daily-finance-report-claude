@@ -90,9 +90,10 @@ Also output one "Focus today" item: the single asset most likely to require atte
 
 
 Step 4 — Assemble report
+All dates and times in the report MUST be in Taiwan Time (TWN, UTC+8). Convert from UTC if needed.
 Generate a Markdown file with this exact structure:
 
-# Morning Market Brief — {YYYY-MM-DD} HH:mm TWN
+# Morning Market Brief — {YYYY-MM-DD} HH:mm dddd
 
 ## 🎯 Focus today
 {one sentence from Step 3}
