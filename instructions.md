@@ -29,7 +29,7 @@ Every step below (prices, news, report) iterates over these blocks. Do not resea
 **Block 6 — semiconductor / AI supply chain, by tier:**
 | Tier | Tickers |
 |------|---------|
-| 上游 Upstream — 設計 / IP / 設備 | NVDA, ARM, ASML, 2454.TW (MediaTek 聯發科) |
+| 上游 Upstream — 設計 / IP / 設備 / 記憶體 | NVDA, ARM, ASML, MU (Micron 美光), 2454.TW (MediaTek 聯發科) |
 | 中游 Midstream — 晶圓代工 | 2330.TW (TSMC 台積電) |
 | 下游 Downstream — 伺服器 / 組裝 / 零組件 | 2308.TW (Delta 台達電), 2317.TW (Hon Hai 鴻海), 2382.TW (Quanta 廣達), 6669.TW (Wiwynn 緯穎), 2327.TW (Yageo 國巨) |
 | 需求端 Hyperscalers — 雲端 / AI capex | GOOG, META, AMZN, MSFT |
@@ -72,7 +72,7 @@ Run the queries below **once, all in parallel**. The plan is organised by block 
 | 3 Energy | `"energy sector oil gas prices XLE VDE"` |
 | 4 US single stocks | `"ORCL Oracle earnings guidance"` · `"AAPL Apple product earnings"` · `"TSLA Tesla news"` |
 | 5 SPAC / new issue | `"SPCX SPAC new issue ETF"` |
-| 6 上游 Upstream | `"NVDA Nvidia AI GPU demand"` · `"ASML ARM lithography chip IP equipment"` · `"2454 MediaTek news"` |
+| 6 上游 Upstream | `"NVDA Nvidia AI GPU demand"` · `"ASML ARM lithography chip IP equipment"` · `"MU Micron memory HBM DRAM"` · `"2454 MediaTek news"` |
 | 6 中游 Midstream | `"2330 TSMC foundry demand pricing"` |
 | 6 下游 Downstream | `"Taiwan AI server supply chain Hon Hai Quanta Wiwynn"` · `"Delta Electronics Yageo components 台達電 國巨"` |
 | 6 需求端 Hyperscalers | `"GOOG META AMZN MSFT AI capex cloud"` |
@@ -142,7 +142,7 @@ price tables here; give signal + development narrative only.}
 ...
 
 ### 6) 半導體產業鏈 Semiconductor / AI supply chain
-#### 上游 Upstream · NVDA / ARM / ASML / 2454.TW · {signal}
+#### 上游 Upstream · NVDA / ARM / ASML / MU / 2454.TW · {signal}
 ...
 #### 中游 Midstream · 2330.TW · {signal}
 ...
