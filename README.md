@@ -1,34 +1,26 @@
-# Claude Finance Report
+# Claude Daily Finance Report
 
-每日產生一份晨間市場簡報的 Claude routine，可用於追蹤自訂的股票、ETF、加密貨幣、匯率與區域市場標的。
-
-沒錢 but 產業趨勢還是不能錯過的。
+A Claude routine that generates a daily morning market briefing, used to track custom stocks, ETFs, cryptocurrencies, exchange rates, and regional market instruments.
 
 ## Manual Setup
-
-- **FMP MCP**：需安裝並設定 Financial Modeling Prep MCP，提供即時報價來源。
-- **Claude Routine Trigger**：在 Claude 排程中設定為 **平日 05:00 TWN**（週末不觸發，由排程本身控制，無需在 instructions 中另行判斷）。
-- **追蹤標的**：依自己的投資組合在 `instructions.md` 中調整追蹤標的與新聞查詢關鍵字。
+- **FMP MCP**: Requires installing and configuring the Financial Modeling Prep MCP to provide a real-time quote source.
+- **Claude Routine Trigger**: Set in the Claude schedule to **weekdays at 05:00 TWN** (no trigger on weekends — controlled by the schedule itself, no need for additional logic in the instructions).
+- **Tracked Instruments**: Adjust the tracked instruments and news search keywords in `instructions.md` according to your own portfolio.
 
 ## `instructions.md` Rules
-
-- **週一新聞窗口**：自動擴展至 72 小時（涵蓋週五至週一），其餘平日為 18 小時。
-- **價格 Fallback**：每個 FMP 回傳結果皆自動驗證——若為 N/A 或時間戳超過 3 個交易日，自動改用 `web_search` 補抓；`.TW` 標的優先搜尋 Yahoo Finance TW / 鉅亨網。
-- **Fallback 標注**：所有非 FMP 來源的價格，在報告中明確標示來源與日期（例如：`NT$113.50 as of 2026-06-13 (web)`）。
-- **信號邏輯**（依嚴重程度優先套用）：
-  - 🔴 `REVIEW`：BEARISH（HIGH/MED 信心）**或** 1D ≤ −3% **或** 論點破壞性新聞
-  - 🟡 `WATCH`：NEUTRAL **或** BULLISH（LOW 信心）**或** −3% < 1D ≤ −1% **或** 影響不明的新動態
-  - 🟢 `HOLD / ADD`：BULLISH（HIGH/MED）**且** 1D > −1% **且** 無新風險
-  - 🟡 `WATCH`（預設）：價格與新聞皆不足，標注資料缺口
+- **Monday News Window**: Automatically extends to 72 hours (covering Friday through Monday); other weekdays use 18 hours.
+- **Price Fallback**: Every FMP result is automatically validated — if it's N/A or the timestamp is more than 3 trading days old, automatically fall back to `web_search`; for `.TW` tickers, prioritize searching Yahoo Finance TW / CNYES (鉅亨網).
+- **Fallback Labeling**: For any price sourced from something other than FMP, the report must clearly indicate the source and date (e.g., `NT$113.50 as of 2026-06-13 (web)`).
+- **Signal Logic** (applied in order of severity):
+  - 🔴 `REVIEW`: BEARISH (HIGH/MED confidence) **OR** 1D ≤ −3% **OR** thesis-breaking news
+  - 🟡 `WATCH`: NEUTRAL **OR** BULLISH (LOW confidence) **OR** −3% < 1D ≤ −1% **OR** new developments with unclear impact
+  - 🟢 `HOLD / ADD`: BULLISH (HIGH/MED) **AND** 1D > −1% **AND** no new risks
+  - 🟡 `WATCH` (default): Insufficient price and news data — flag the data gap
 
 ## Output
-
-報告輸出至：
-
+The report is output to:
 ```text
 reports/{YYYY-MM-DD}-brief.md
 ```
-
-- 英文摘要保留，下方附繁體中文翻譯。
-- 本 routine 產出內容僅供資訊參考，不構成投資建議。
-
+- The English summary is retained, with a Traditional Chinese translation appended below.
+- The content produced by this routine is for informational purposes only and does not constitute investment advice.
