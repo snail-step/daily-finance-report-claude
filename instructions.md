@@ -18,13 +18,14 @@ Every step below (prices, news, report) iterates over these blocks. Do not resea
 | 2 | Space & defense | NASA, UFO | Thematic space/defense |
 | 3 | Energy | XLE, VDE | Oil & gas sector |
 | 4 | US single stocks | ORCL, AAPL, TSLA | Idiosyncratic large caps |
-| 5 | SPAC / new issue | SPCX | Speculative sleeve |
+| 5 | SpaceX | SPCX (SpaceX 太空探索) | Speculative sleeve |
 | 6 | **Semiconductor / AI supply chain (半導體產業鏈)** | see sub-tiers below | Core theme — research deepest |
 | 7 | Crypto | BTC/USD | — |
 | 8 | FX & rates | USD/TWD | Fed / dollar / TWD |
 | 9 | Taiwan ETFs | 0050.TW, 00947.TW | Taiwan beta |
 | 10 | Taiwan single stocks | 2464.TW (Mirle 盟立) | Idiosyncratic |
 | 11 | Taiwan index | ^TWII (TAIEX 加權指數) | Benchmark |
+| 12 | Gold (price watch only) | IAU, GLD | no news research |
 
 **Block 6 — semiconductor / AI supply chain, by tier:**
 | Tier | Tickers |
@@ -71,7 +72,7 @@ Run the queries below **once, all in parallel**. The plan is organised by block 
 | 2 Space & defense | `"space defense satellite ETF contracts NASA UFO"` |
 | 3 Energy | `"energy sector oil gas prices XLE VDE"` |
 | 4 US single stocks | `"ORCL Oracle earnings guidance"` · `"AAPL Apple product earnings"` · `"TSLA Tesla news"` |
-| 5 SPAC / new issue | `"SPCX SPAC new issue ETF"` |
+| 5 SpaceX | `"SPCX SpaceX Space Exploration Technologies news"` |
 | 6 上游 Upstream | `"NVDA Nvidia AI GPU demand"` · `"ASML ARM lithography chip IP equipment"` · `"MU Micron memory HBM DRAM"` · `"2454 MediaTek news"` |
 | 6 中游 Midstream | `"2330 TSMC foundry demand pricing"` |
 | 6 下游 Downstream | `"Taiwan AI server supply chain Hon Hai Quanta Wiwynn"` · `"Delta Electronics Yageo components 台達電 國巨"` |
@@ -81,6 +82,7 @@ Run the queries below **once, all in parallel**. The plan is organised by block 
 | 9 Taiwan ETFs | `"0050 00947 Taiwan ETF flows"` |
 | 10 Taiwan single stocks | `"2464 Mirle 盟立 news"` |
 | 11 Taiwan index | `"TAIEX Taiwan stock market"` |
+| 12 Gold | _price watch only — no news query_ |
 
 For each block, distil (not per query — **per block**):
 - **Development**: 1–2 sentences on the single most market-moving item.
@@ -116,7 +118,7 @@ Write the file to `reports/{YYYY-MM-DD}-brief.md` with exactly this structure:
 ## 📊 Price snapshot
 | Block | Asset (Ticker) | Name | Price | 1D % | Signal |
 |-------|----------------|------|-------|------|--------|
-{one row per ticker, ordered by the universe blocks 1→11; block 6 grouped by tier.
+{one row per ticker, ordered by the universe blocks 1→12; block 6 grouped by tier.
 Bad data uses the markers `stale` / `data gap` in the affected cell — never blank.}
 
 Signal legend: 🟢 HOLD/ADD · 🟡 WATCH · 🔴 REVIEW · data: `No material news.` / `stale` / `data gap`
@@ -138,7 +140,7 @@ price tables here; give signal + development narrative only.}
 ### 4) US single stocks — ORCL / AAPL / TSLA · {signal}
 ...
 
-### 5) SPAC / new issue — SPCX · {signal}
+### 5) SpaceX — SPCX · {signal}
 ...
 
 ### 6) 半導體產業鏈 Semiconductor / AI supply chain
@@ -164,6 +166,9 @@ price tables here; give signal + development narrative only.}
 ...
 
 ### 11) Taiwan index — ^TWII · {signal}
+...
+
+### 12) Gold — IAU / GLD · {signal}
 ...
 
 ## 💡 Key risk today
