@@ -1,156 +1,190 @@
-## Pre-flight check — Monday extended window
-If today is **Monday** (Taiwan Time, UTC+8): expand **all** news search windows to **72 hours** (covering Friday–Monday). Replace every mention of "past 18 hours" with "past 72 hours" for today only.
-All other weekdays: proceed normally with 18-hour news windows.
+# Morning Market Brief — routine instructions
+
+## Pre-flight — Monday extended window
+Resolve "now" in Taiwan Time (UTC+8). The news window is a single variable `WINDOW`:
+- **Monday**: `WINDOW = 72h` (covers Friday–Monday).
+- **All other weekdays**: `WINDOW = 18h`.
+
+Every "past WINDOW" reference below uses this one value. Do not hard-code hours anywhere else.
 
 ---
 
-Step 1 — Price snapshot
-Using the FMP MCP, fetch the CURRENT price and 1-day % change for:
-  US broad ETFs  : SPY, VT, VEA, IWY, SPMO
-  US sector ETFs : NASA, UFO, IAU, GLD, XLE, VDE
-  US equities    : GOOG, ORCL, LHX, PURR
-  Crypto         : BTC/USD
-  FX             : USD/TWD, DXY (US Dollar Index)
-  Taiwan ETFs    : 0050.TW, 00910.TW, 00947.TW
-  Taiwan stocks  : 2330.TW, 2454.TW, 2464.TW
-  Taiwan index   : ^TWII (TAIEX)
+## Tracked universe (single source of truth)
+Every step below (prices, news, report) iterates over these blocks. Do not research or report any ticker outside this table.
 
-**Fallback rule (applies to every ticker automatically):**
-After each FMP fetch, evaluate the result:
-- If price is null / N/A / empty → **stale or unsupported**
-- If the price timestamp is older than 3 trading days → **stale**
+| # | Block | Tickers | Role |
+|---|-------|---------|------|
+| 1 | US broad market | SPY, SPMO | Beta + momentum factor |
+| 2 | Space & defense | NASA, UFO | Thematic space/defense |
+| 3 | Energy | XLE, VDE | Oil & gas sector |
+| 4 | US single stocks | ORCL, AAPL, TSLA | Idiosyncratic large caps |
+| 5 | SpaceX | SPCX (SpaceX 太空探索) | Speculative sleeve |
+| 6 | **Semiconductor / AI supply chain (半導體產業鏈)** | see sub-tiers below | Core theme — research deepest |
+| 7 | Crypto | BTC/USD | — |
+| 8 | FX & rates | USD/TWD | Fed / dollar / TWD |
+| 9 | Taiwan ETFs | 0050.TW, 00947.TW | Taiwan beta |
+| 10 | Taiwan single stocks | 2464.TW (Mirle 盟立) | Idiosyncratic |
+| 11 | Taiwan index | ^TWII (TAIEX 加權指數) | Benchmark |
+| 12 | Gold (price watch only) | IAU, GLD | no news research |
 
-For any stale/unsupported result, run a web search fallback:
-- Taiwan-listed tickers (suffix `.TW`): `web_search("{TICKER} 股價 site:tw.stock.yahoo.com OR site:cnyes.com")`
-- All other tickers: `web_search("{TICKER} current price")`
+**Block 6 — semiconductor / AI supply chain, by tier:**
+| Tier | Tickers |
+|------|---------|
+| 上游 Upstream — 設計 / IP / 設備 / 記憶體 | NVDA, ARM, ASML, MU (Micron 美光), 2454.TW (MediaTek 聯發科) |
+| 中游 Midstream — 晶圓代工 | 2330.TW (TSMC 台積電) |
+| 下游 Downstream — 伺服器 / 組裝 / 零組件 | 2308.TW (Delta 台達電), 2317.TW (Hon Hai 鴻海), 2382.TW (Quanta 廣達), 6669.TW (Wiwynn 緯穎), 2327.TW (Yageo 國巨) |
+| 需求端 Hyperscalers — 雲端 / AI capex | GOOG, META, AMZN, MSFT |
 
-Extract the most recent price and its date from the search result. In the report, always label the source and date for any fallback price (e.g. "NT$113.50 as of 2026-06-13 (web)").
+---
 
-Store all values in a variable called PRICES.
+## Data-quality markers (use everywhere)
+When data is missing, incomplete, or too old, never guess or leave a cell blank — write one of these exact markers:
+- `No material news.` — no relevant news found inside `WINDOW`.
+- `stale` — a value exists but is out of date (price older than 3 trading days, or the only news available is older than `WINDOW`). Show the value together with the marker and its date, e.g. `NT$113.50 · 2026-06-13 · stale`.
+- `data gap` — data could not be obtained at all (null/unavailable even after fallback, or an API error).
 
-Step 2A — Macro & Sector Trends (past 18 hours only, or 72 hours on Monday)
-Run these broad market searches in parallel:
+Any `stale` or `data gap` on a block feeds the data-gap handling in Step 3.
 
-a) "crypto regulation bitcoin DeFi market"
-b) "AI capex data center chips market"
-c) "defense space satellite contracts"
-d) "Fed rates Taiwan semiconductor macro"
-e) "global ETF flows VT VEA"
-f) "gold ETF dollar inflation"
-g) "energy ETF oil gas prices"
-h) "Taiwan semiconductor TSMC MediaTek"
+---
 
+## Step 1 — Prices
+1. Fetch CURRENT price + 1-day % change for **every** ticker in the universe in **one parallel batch** via the FMP MCP. Do not fetch one at a time.
+2. Fallback only when a result is bad (do not web-search tickers FMP already returned cleanly):
+   - Bad = price is null / N/A / empty, **or** timestamp older than 3 trading days.
+   - Taiwan tickers (`.TW`): `web_search("{TICKER} 股價 site:tw.stock.yahoo.com OR site:cnyes.com")`
+   - Others: `web_search("{TICKER} current price")`
+   - Take the most recent price + date; in the report label it as fallback, e.g. `NT$113.50 · 2026-06-13 (web)`.
+   - If the fallback returns only an out-of-date price, show it with the `stale` marker; if it returns nothing at all, write `data gap` in both the Price and 1D% cells. (See Data-quality markers.)
+3. Store everything in `PRICES`.
 
-Step 2B — Position-Specific News (past 18 hours only, or 72 hours on Monday)
-Run these ticker-focused searches in parallel:
+## Step 2 — News research (grouped, one parallel pass)
+Run the queries below **once, all in parallel**. The plan is organised by block so that macro/sector context and single-name news are gathered together — there is no separate macro step and no cross-referencing.
 
-1) "SPY S&P 500 market news"
-2) "VT VEA ETF flows"
-3) "IWY SPMO growth momentum ETF"
-4) "NASA UFO space ETF news"
-5) "IAU GLD gold ETF news"
-6) "XLE VDE energy ETF news"
-7) "GOOG Alphabet AI news"
-8) "ORCL Oracle earnings guidance"
-9) "LHX defense contract news"
-10) "PURR HYPE Hyperliquid news"
-11) "BTC bitcoin overnight news"
-12) "USD TWD dollar policy Fed"
-13) "TAIEX Taiwan stock market news"
-14) "0050 00910 00947 Taiwan ETF news"
-15) "2330.TW TSMC news"
-16) "2454.TW MediaTek news"
-17) "2464.TW Mirle news"
+**Efficiency rules (深入但不繞路):**
+- One pass. Only re-query a topic if it returned nothing usable, and then at most **one** refined retry.
+- Keep only results inside `WINDOW`; discard older hits immediately.
+- Stop scanning a query once you have its most market-moving item (≈ top 5 results is enough).
+- Spend depth where it matters: block 6 gets the most queries; single-name blocks get one each.
 
-For each category, extract:
-  - 1–2 sentence summary of the most market-moving development
-  - Sentiment: BULLISH / NEUTRAL / BEARISH
-  - Confidence: HIGH / MED / LOW
-  - 在英文原文下面，翻譯一個中文版（英文保留不刪）
+| Block | Queries |
+|-------|---------|
+| 1 US broad market | `"S&P 500 market breadth + global equity ETF flows"` |
+| 2 Space & defense | `"space defense satellite ETF contracts NASA UFO"` |
+| 3 Energy | `"energy sector oil gas prices XLE VDE"` |
+| 4 US single stocks | `"ORCL Oracle earnings guidance"` · `"AAPL Apple product earnings"` · `"TSLA Tesla news"` |
+| 5 SpaceX | `"SPCX SpaceX Space Exploration Technologies news"` |
+| 6 上游 Upstream | `"NVDA Nvidia AI GPU demand"` · `"ASML ARM lithography chip IP equipment"` · `"MU Micron memory HBM DRAM"` · `"2454 MediaTek news"` |
+| 6 中游 Midstream | `"2330 TSMC foundry demand pricing"` |
+| 6 下游 Downstream | `"Taiwan AI server supply chain Hon Hai Quanta Wiwynn"` · `"Delta Electronics Yageo components 台達電 國巨"` |
+| 6 需求端 Hyperscalers | `"GOOG META AMZN MSFT AI capex cloud"` |
+| 7 Crypto | `"bitcoin crypto regulation overnight"` |
+| 8 FX & rates | `"USD TWD Fed rate policy dollar"` |
+| 9 Taiwan ETFs | `"0050 00947 Taiwan ETF flows"` |
+| 10 Taiwan single stocks | `"2464 Mirle 盟立 news"` |
+| 11 Taiwan index | `"TAIEX Taiwan stock market"` |
+| 12 Gold | _price watch only — no news query_ |
 
-Skip any result older than 18 hours (or 72 hours on Monday). If nothing is found, write "No material news."
+For each block, distil (not per query — **per block**):
+- **Development**: 1–2 sentences on the single most market-moving item.
+- **Sentiment**: BULLISH / NEUTRAL / BEARISH.
+- **Confidence**: HIGH / MED / LOW.
+- Data quality (see Data-quality markers): nothing inside `WINDOW` → `No material news.`; only older-than-`WINDOW` items available → note it with `stale`; a source/query failed entirely → `data gap`.
 
-Step 3 — Decision signal
-For each position, combine price data from Step 1 and news sentiment from Step 2 using these rules:
-
-**Signal logic (apply the highest-severity rule that matches):**
+## Step 3 — Signal
+For each block (and each tier of block 6), combine `PRICES` 1D% with news sentiment. Apply the highest-severity rule that matches:
 
 | Condition | Signal |
 |-----------|--------|
-| BEARISH sentiment (HIGH or MED confidence) **OR** 1D price change ≤ −3% **OR** thesis-breaking news | 🔴 REVIEW |
-| NEUTRAL sentiment **OR** BULLISH with LOW confidence **OR** −1% < 1D price ≤ −3% **OR** notable new development with unclear impact | 🟡 WATCH |
-| BULLISH sentiment (HIGH or MED confidence) **AND** 1D price change > −1% **AND** no new material risk | 🟢 HOLD/ADD |
-| Insufficient data (price N/A and no news) | 🟡 WATCH (default; note data gap) |
+| BEARISH (HIGH/MED) **OR** 1D% ≤ −3% **OR** thesis-breaking news | 🔴 REVIEW |
+| NEUTRAL **OR** BULLISH-LOW **OR** −3% < 1D% ≤ −1% **OR** notable but unclear-impact news | 🟡 WATCH |
+| BULLISH (HIGH/MED) **AND** 1D% > −1% **AND** no new material risk | 🟢 HOLD/ADD |
+| price N/A **and** no news | 🟡 WATCH (note data gap) |
 
-If the 1D price change is unavailable (N/A), weight sentiment alone and note the data gap.
+If 1D% is N/A, weight sentiment alone and note the gap.
+Then pick one **Focus today**: the single asset most likely to need attention, with a one-line reason.
 
-Also output one "Focus today" item: the single asset most likely to require attention today, with a one-line reason.
+## Step 4 — Report
+All timestamps in Taiwan Time (UTC+8). **Bilingual rule for every summary/narrative in the report: English original first, 中文翻譯 directly below (英文保留不刪).**
 
+Write the file to `reports/{YYYY-MM-DD}-brief.md` with exactly this structure:
 
-Step 4 — Assemble report
-Generate a Markdown file with this exact structure:
-
-# Morning Market Brief — {YYYY-MM-DD} 05:00 TWN
+```markdown
+# Morning Market Brief — {YYYY-MM-DD} HH:mm dddd (Taiwan Time)
 
 ## 🎯 Focus today
-{one sentence from Step 3}
-
-  - 在英文原文下面，翻譯一個中文版（英文保留不刪）
+{one sentence — EN}
+{中文}
 
 ## 📊 Price snapshot
-| Asset (Ticker) | Fund Name | Price | 1D % | Signal |
-|-------|-----------|-------|------|--------|
-(fill from PRICES + signals)
+| Block | Asset (Ticker) | Name | Price | 1D % | Signal |
+|-------|----------------|------|-------|------|--------|
+{one row per ticker, ordered by the universe blocks 1→12; block 6 grouped by tier.
+Bad data uses the markers `stale` / `data gap` in the affected cell — never blank.}
 
-## 📰 News highlights
-  - 關於以下內容：在英文原文下面，翻譯一個中文版（英文保留不刪）
+Signal legend: 🟢 HOLD/ADD · 🟡 WATCH · 🔴 REVIEW · data: `No material news.` / `stale` / `data gap`
 
-### Macro & Sector Trends
-#### a) "crypto regulation bitcoin DeFi market"
-#### b) "AI capex data center chips market"
-#### c) "defense space satellite contracts"
-#### d) "Fed rates Taiwan semiconductor macro"
-#### e) "global ETF flows VT VEA"
-#### f) "gold ETF dollar inflation"
-#### g) "energy ETF oil gas prices"
-#### h) "Taiwan semiconductor TSMC MediaTek"
+## 🔍 Analysis by theme
+{One subsection per block, in universe order. Prices already shown above — do NOT repeat
+price tables here; give signal + development narrative only.}
 
-### Position Highlights
-#### SPY / VT / VEA / IWY / SPMO — {signal}
-{summary}
+### 1) US broad market — SPY / SPMO · {signal}
+{EN development}
+{中文}
 
-#### NASA / UFO — {signal}
-{summary}
+### 2) Space & defense — NASA / UFO · {signal}
+...
 
-#### IAU / GLD — {signal}
-{summary}
+### 3) Energy — XLE / VDE · {signal}
+...
 
-#### XLE / VDE — {signal}
-{summary}
+### 4) US single stocks — ORCL / AAPL / TSLA · {signal}
+...
 
-#### GOOG / ORCL / LHX / PURR — {signal}
-{summary}
+### 5) SpaceX — SPCX · {signal}
+...
 
-#### BTC  — {BULLISH/NEUTRAL/BEARISH}
-{1–2 sentence summary}
+### 6) 半導體產業鏈 Semiconductor / AI supply chain
+#### 上游 Upstream · NVDA / ARM / ASML / MU / 2454.TW · {signal}
+...
+#### 中游 Midstream · 2330.TW · {signal}
+...
+#### 下游 Downstream · 2308.TW / 2317.TW / 2382.TW / 6669.TW / 2327.TW · {signal}
+...
+#### 需求端 Hyperscalers · GOOG / META / AMZN / MSFT · {signal}
+...
 
-#### USD/TWD / DXY — {signal}
-{summary}
+### 7) Crypto — BTC · {sentiment}
+...
 
-#### 0050.TW / 00910.TW / 00947.TW — {signal}
-{summary}
+### 8) FX & rates — USD/TWD · {signal}
+...
 
-#### 2330.TW / 2454.TW / 2464.TW — {signal}
-{summary}
+### 9) Taiwan ETFs — 0050.TW / 00947.TW · {signal}
+...
 
-... (repeat for all tracked assets) ...
+### 10) Taiwan single stocks — 2464.TW · {signal}
+...
+
+### 11) Taiwan index — ^TWII · {signal}
+...
+
+### 12) Gold — IAU / GLD · {signal}
+...
 
 ## 💡 Key risk today
-{1 sentence: biggest macro or position-specific risk to watch}
+{1 sentence: biggest macro or position risk — EN}
+{中文}
 
 ---
 *Auto-generated by Morning Market Brief routine. Not financial advice.*
+```
 
-Save the file as reports/{YYYY-MM-DD}-brief.md and commit to the default branch.
-Push directly to main (not a feature branch) — do not create a PR.
-Then save the full report content to github repo (if possible) #morning-brief.
+## Git workflow
+- Develop and commit on the current working branch, following the harness's routine git policy.
+- After the work is complete, automatically merge/fast-forward the working branch into `main` and push `main`. Do this automatically, without asking.
+- End the commit message with this trailer on its own line:
+  `Co-Authored-By: Claude <noreply@anthropic.com>`
+
+## Hard constraints (do NOT violate)
+- Do NOT open a pull request. Do NOT create a GitHub issue.
+- Do NOT run `gh issue create`, `gh pr create`, or any GitHub API / `gh` command.
