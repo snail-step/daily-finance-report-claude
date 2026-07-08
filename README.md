@@ -6,6 +6,7 @@ A Claude routine that generates a daily morning market briefing, used to track c
 - **FMP MCP**: Requires installing and configuring the Financial Modeling Prep MCP to provide a real-time quote source.
 - **Claude Routine Trigger**: Set in the Claude schedule to **weekdays at 05:00 TWN** (no trigger on weekends — controlled by the schedule itself, no need for additional logic in the instructions).
 - **Tracked Instruments**: Adjust the tracked instruments and news search keywords in `instructions.md` according to your own portfolio.
+- **GitHub App Authorization**: In GitHub **Settings → Integrations/Applications**, Claude must be authorized under both **Installed GitHub Apps** and **Authorized GitHub Apps**, with the **Contents: Read and write** permission scope granted for this repo — otherwise the routine cannot push the generated report commits.
 
 ## `instructions.md` Rules
 - **Monday News Window**: Automatically extends to 72 hours (covering Friday through Monday); other weekdays use 18 hours.
