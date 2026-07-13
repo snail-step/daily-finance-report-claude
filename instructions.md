@@ -18,7 +18,7 @@ Every step below (prices, news, report) iterates over these blocks. Do not resea
 | 2 | Space & defense | NASA, UFO | Thematic space/defense |
 | 3 | Energy | XLE, VDE | Oil & gas sector |
 | 4 | US single stocks | ORCL, AAPL, TSLA | Idiosyncratic large caps |
-| 5 | SpaceX | SPCX (SpaceX 太空探索) | Speculative sleeve |
+| 5 | SpaceX | SPCX | Speculative sleeve |
 | 6 | **Semiconductor / AI supply chain (半導體產業鏈)** | see sub-tiers below | Core theme — research deepest |
 | 7 | Crypto | BTC/USD | — |
 | 8 | FX & rates | USD/TWD | Fed / dollar / TWD |
@@ -30,9 +30,9 @@ Every step below (prices, news, report) iterates over these blocks. Do not resea
 **Block 6 — semiconductor / AI supply chain, by tier:**
 | Tier | Tickers |
 |------|---------|
-| 上游 Upstream — 設計 / IP / 設備 / 記憶體 | NVDA, ARM, ASML, MU (Micron 美光), 2454.TW (MediaTek 聯發科) |
+| 上游 Upstream — 設計 / IP / 設備 / 記憶體 | NVDA, ARM, ASML, MU (Micron 美光), 2454.TW (MediaTek 聯發科), 2408.TW (Nanya 南亞科) |
 | 中游 Midstream — 晶圓代工 | 2330.TW (TSMC 台積電) |
-| 下游 Downstream — 伺服器 / 組裝 / 零組件 | 2308.TW (Delta 台達電), 2317.TW (Hon Hai 鴻海), 2382.TW (Quanta 廣達), 6669.TW (Wiwynn 緯穎), 2327.TW (Yageo 國巨) |
+| 下游 Downstream — 伺服器 / 組裝 / 零組件 | 2308.TW (Delta 台達電), 2317.TW (Hon Hai 鴻海), 2382.TW (Quanta 廣達), 6669.TW (Wiwynn 緯穎), 2327.TW (Yageo 國巨), 2368.TW (GCE 金像電), 2383.TW (EMC 台光電) |
 | 需求端 Hyperscalers — 雲端 / AI capex | GOOG, META, AMZN, MSFT |
 
 ---
@@ -73,11 +73,11 @@ Run the queries below **once, all in parallel**. The plan is organised by block 
 | 3 Energy | `"energy sector oil gas prices XLE VDE"` |
 | 4 US single stocks | `"ORCL Oracle earnings guidance"` · `"AAPL Apple product earnings"` · `"TSLA Tesla news"` |
 | 5 SpaceX | `"SPCX SpaceX Space Exploration Technologies news"` |
-| 6 上游 Upstream | `"NVDA Nvidia AI GPU demand"` · `"ASML ARM lithography chip IP equipment"` · `"MU Micron memory HBM DRAM"` · `"2454 MediaTek news"` |
+| 6 上游 Upstream | `"NVDA Nvidia AI GPU demand"` · `"ASML ARM lithography chip IP equipment"` · `"MU Micron 2408 Nanya memory HBM DRAM"` · `"2454 MediaTek news"` |
 | 6 中游 Midstream | `"2330 TSMC foundry demand pricing"` |
-| 6 下游 Downstream | `"Taiwan AI server supply chain Hon Hai Quanta Wiwynn"` · `"Delta Electronics Yageo components 台達電 國巨"` |
+| 6 下游 Downstream | `"Taiwan AI server supply chain Hon Hai Quanta Wiwynn"` · `"Delta Electronics Yageo components 台達電 國巨"` · `"2368 金像電 2383 台光電 AI server PCB CCL"` |
 | 6 需求端 Hyperscalers | `"GOOG META AMZN MSFT AI capex cloud"` |
-| 7 Crypto | `"bitcoin crypto regulation overnight"` |
+| 7 Crypto | `"US crypto legislation stablecoin bill SEC progress"` · `"bitcoin ethereum spot ETF flows institutional"` · `"new blockchain mainnet launch upgrade"` · `"crypto exchange hack exploit"` |
 | 8 FX & rates | `"USD TWD Fed rate policy dollar"` |
 | 9 Taiwan ETFs | `"0050 00947 Taiwan ETF flows"` |
 | 10 Taiwan single stocks | `"2464 Mirle 盟立 news"` |
@@ -89,6 +89,12 @@ For each block, distil (not per query — **per block**):
 - **Sentiment**: BULLISH / NEUTRAL / BEARISH.
 - **Confidence**: HIGH / MED / LOW.
 - Data quality (see Data-quality markers): nothing inside `WINDOW` → `No material news.`; only older-than-`WINDOW` items available → note it with `stale`; a source/query failed entirely → `data gap`.
+
+**Block 7 extra — impact scoring for crypto news:**
+- For regulatory items, first tag the stage: rumor / proposed / committee passed / floor passed / signed into law. The later the stage, the larger the impact — but if the outcome was widely expected, passage itself may be priced in ("sell the news").
+- Impact = scope (whole market > sector > single coin) × certainty (done deal > in progress > rumor) × novelty (not yet priced in).
+- Validate against BTC 1D% and spot-ETF flows: a major headline with no price reaction → treat as already digested and downgrade Confidence by one level.
+- Output the usual Sentiment + Confidence (HIGH/MED/LOW) so it feeds Step 3 unchanged.
 
 ## Step 3 — Signal
 For each block (and each tier of block 6), combine `PRICES` 1D% with news sentiment. Apply the highest-severity rule that matches:
@@ -144,11 +150,11 @@ price tables here; give signal + development narrative only.}
 ...
 
 ### 6) 半導體產業鏈 Semiconductor / AI supply chain
-#### 上游 Upstream · NVDA / ARM / ASML / MU / 2454.TW · {signal}
+#### 上游 Upstream · NVDA / ARM / ASML / MU / 2454.TW / 2408.TW · {signal}
 ...
 #### 中游 Midstream · 2330.TW · {signal}
 ...
-#### 下游 Downstream · 2308.TW / 2317.TW / 2382.TW / 6669.TW / 2327.TW · {signal}
+#### 下游 Downstream · 2308.TW / 2317.TW / 2382.TW / 6669.TW / 2327.TW / 2368.TW / 2383.TW · {signal}
 ...
 #### 需求端 Hyperscalers · GOOG / META / AMZN / MSFT · {signal}
 ...
