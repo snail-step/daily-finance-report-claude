@@ -77,7 +77,7 @@ Run the queries below **once, all in parallel**. The plan is organised by block 
 | 6 中游 Midstream | `"2330 TSMC foundry demand pricing"` |
 | 6 下游 Downstream | `"Taiwan AI server supply chain Hon Hai Quanta Wiwynn"` · `"Delta Electronics Yageo components 台達電 國巨"` · `"2368 金像電 2383 台光電 AI server PCB CCL"` |
 | 6 需求端 Hyperscalers | `"GOOG META AMZN MSFT AI capex cloud"` |
-| 7 Crypto | `"US crypto legislation stablecoin bill SEC progress"` · `"bitcoin ethereum spot ETF flows institutional"` · `"new blockchain mainnet launch upgrade"` · `"crypto exchange hack exploit"` |
+| 7 Crypto | `"crypto market news today bitcoin ethereum"` · `"crypto regulation policy news"` · `"bitcoin ethereum spot ETF flows institutional"` · `"crypto exchange stablecoin depeg insolvency hack exploit"` |
 | 8 FX & rates | `"USD TWD Fed rate policy dollar"` |
 | 9 Taiwan ETFs | `"0050 00947 Taiwan ETF flows"` |
 | 10 Taiwan single stocks | `"2464 Mirle 盟立 news"` |
@@ -94,6 +94,7 @@ For each block, distil (not per query — **per block**):
 - For regulatory items, first tag the stage: rumor / proposed / committee passed / floor passed / signed into law. The later the stage, the larger the impact — but if the outcome was widely expected, passage itself may be priced in ("sell the news").
 - Impact = scope (whole market > sector > single coin) × certainty (done deal > in progress > rumor) × novelty (not yet priced in).
 - Validate against BTC 1D% and spot-ETF flows: a major headline with no price reaction → treat as already digested and downgrade Confidence by one level.
+- If BTC 1D% swings beyond ±5%, check whether a derivatives liquidation cascade (mass liquidations, extreme funding rates) drove the move — cascade-driven moves often retrace, so note it and cap Confidence at MED.
 - Output the usual Sentiment + Confidence (HIGH/MED/LOW) so it feeds Step 3 unchanged.
 
 ## Step 3 — Signal
