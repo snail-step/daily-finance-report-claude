@@ -81,7 +81,7 @@ Run the queries below **once, all in parallel**. The plan is organised by block 
 | 8 FX & rates | `"USD TWD Fed rate policy dollar"` |
 | 9 Taiwan ETFs | `"0050 00947 Taiwan ETF flows"` |
 | 10 Taiwan single stocks | `"2464 Mirle 盟立 news"` |
-| 11 Taiwan index | `"TAIEX Taiwan stock market"` |
+| 11 Taiwan index | `"TAIEX Taiwan stock market"` · `"台股 三大法人 買賣超 site:tw.stock.yahoo.com OR site:cnyes.com"` |
 | 12 Gold | _price watch only — no news query_ |
 
 For each block, distil (not per query — **per block**):
@@ -95,6 +95,10 @@ For each block, distil (not per query — **per block**):
 - Impact = scope (whole market > sector > single coin) × certainty (done deal > in progress > rumor) × novelty (not yet priced in).
 - Validate against BTC 1D% and spot-ETF flows: a major headline with no price reaction → treat as already digested and downgrade Confidence by one level.
 - If BTC 1D% swings beyond ±5%, check whether a derivatives liquidation cascade (mass liquidations, extreme funding rates) drove the move — cascade-driven moves often retrace, so note it and cap Confidence at MED.
+
+**Block 11 extra — institutional flows (三大法人買賣超):**
+- From the 三大法人 query, extract the **previous trading day's** figures for each of the three — 外資 (foreign investors), 投信 (investment trusts), 自營商 (dealers) — with **buy amount (買進) and sell amount (賣出) listed separately**, plus the net (買賣超), in NT$億.
+- Always show the data date. If the latest available figures are older than the previous trading day, mark `stale`; if unobtainable, `data gap` (see Data-quality markers).
 - Output the usual Sentiment + Confidence (HIGH/MED/LOW) so it feeds Step 3 unchanged.
 
 ## Step 3 — Signal
@@ -173,7 +177,14 @@ price tables here; give signal + development narrative only.}
 ...
 
 ### 11) Taiwan index — ^TWII · {signal}
-...
+{EN development}
+{中文}
+三大法人買賣金額（{data date}）：
+| 法人 | 買進 | 賣出 | 買賣超 |
+|------|------|------|--------|
+| 外資 | NT$xx億 | NT$xx億 | ±NT$xx億 |
+| 投信 | NT$xx億 | NT$xx億 | ±NT$xx億 |
+| 自營商 | NT$xx億 | NT$xx億 | ±NT$xx億 |
 
 ### 12) Gold — IAU / GLD · {signal}
 ...
