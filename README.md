@@ -1,12 +1,12 @@
-# Claude Daily Finance Report
+# Codex Desktop Daily Finance Report
 
-A Claude routine that generates a daily morning market briefing, used to track custom stocks, ETFs, cryptocurrencies, exchange rates, and regional market instruments.
+A Codex desktop task that generates a daily morning market briefing, used to track custom stocks, ETFs, cryptocurrencies, exchange rates, and regional market instruments.
 
 ## Manual Setup
-- **FMP MCP**: Requires installing and configuring the Financial Modeling Prep MCP to provide a real-time quote source.
-- **Claude Routine Trigger**: Set in the Claude schedule to **weekdays at 05:00 TWN** (no trigger on weekends — controlled by the schedule itself, no need for additional logic in the instructions).
+- **Market data**: FMP is preferred when configured. If it is unavailable, the task uses live web price sources and labels the source and date.
+- **Codex Desktop Schedule**: Set a Codex desktop scheduled task for **weekdays at 05:00 Taiwan time**. The Mac must be awake, online, signed in, and running Codex.
 - **Tracked Instruments**: Adjust the tracked instruments and news search keywords in `instructions.md` according to your own portfolio.
-- **GitHub App Authorization**: In GitHub **Settings → Integrations/Applications**, Claude must be authorized under both **Installed GitHub Apps** and **Authorized GitHub Apps**, with the **Contents: Read and write** permission scope granted for this repo — otherwise the routine cannot push the generated report commits.
+- **Git authentication**: Configure local Git authentication with write access to this repo. Claude GitHub App authorization is not used by the desktop workflow. Verify access before the initial report run.
 
 ## `instructions.md` Rules
 - **Monday News Window**: Automatically extends to 72 hours (covering Friday through Monday); other weekdays use 18 hours.
@@ -25,3 +25,12 @@ reports/{YYYY-MM-DD}-brief.md
 ```
 - The English summary is retained, with a Traditional Chinese translation appended below.
 - The content produced by this routine is for informational purposes only and does not constitute investment advice.
+
+
+## Codex desktop workflow
+
+The desktop workflow preserves the original research rules and report history. No GitHub Actions workflow is required.
+
+Each run reads `instructions.md`, fetches current prices and news, writes `reports/YYYY-MM-DD-brief.md`, commits that report, and pushes `main`. It skips the run if that date's report already exists.
+
+Run `./scripts/setup-local.sh` once in the checkout to select the `snail-step` GitHub SSH identity and repo-local commit author. Keep the Mac awake, connected, and the app running during scheduled execution.
