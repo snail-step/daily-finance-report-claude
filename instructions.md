@@ -81,7 +81,7 @@ Run the queries below **once, all in parallel**. The plan is organised by block 
 | 8 FX & rates | `"USD TWD Fed rate policy dollar"` |
 | 9 Taiwan ETFs | `"0050 00947 Taiwan ETF flows"` |
 | 10 Taiwan single stocks | `"2464 Mirle 盟立 news"` |
-| 11 Taiwan index | `"TAIEX Taiwan stock market"` · `"台股 三大法人 買賣超 site:tw.stock.yahoo.com OR site:cnyes.com"` |
+| 11 Taiwan index | `"TAIEX Taiwan stock market"` · `"台股 三大法人 買賣超 site:twse.com.tw OR site:stock.wearn.com OR site:tw.stock.yahoo.com OR site:cnyes.com"` |
 | 12 Gold | _price watch only — no news query_ |
 
 For each block, distil (not per query — **per block**):
@@ -97,9 +97,10 @@ For each block, distil (not per query — **per block**):
 - If BTC 1D% swings beyond ±5%, check whether a derivatives liquidation cascade (mass liquidations, extreme funding rates) drove the move — cascade-driven moves often retrace, so note it and cap Confidence at MED.
 
 **Block 11 extra — institutional flows (三大法人買賣超):**
-- From the 三大法人 query, extract the **previous trading day's** figures for each of the three — 外資 (foreign investors), 投信 (investment trusts), 自營商 (dealers) — with **buy amount (買進) and sell amount (賣出) listed separately**, plus the net (買賣超), in NT$億.
-- Always show the data date. If the latest available figures are older than the previous trading day, mark `stale`; if unobtainable, `data gap` (see Data-quality markers).
-- Output the usual Sentiment + Confidence (HIGH/MED/LOW) so it feeds Step 3 unchanged.
+- Extract the **latest completed trading day's** figures for each of the three — 外資 (foreign investors), 投信 (investment trusts), 自營商 (dealers) — with **buy amount (買進) and sell amount (賣出) listed separately**, plus the net (買賣超), in NT$億. At the routine 05:00 run this will normally be the prior trading day; for a post-close manual run it may be the same calendar day.
+- Verify the source page's displayed data date before copying values; do not substitute a row from its historical table. Prefer TWSE data, with [聚財網三大法人買賣金額](https://stock.wearn.com/fundthree.asp) as the detailed fallback.
+- If the source splits dealers into `自營商(自行買賣)` and `自營商(避險)`, add their buy and sell amounts separately to produce the single `自營商` row; use the source's displayed combined net and note any rounding difference.
+- Always show the data date and whether the figures exclude after-hours block trades. If the latest available figures are older than the latest completed trading day, mark `stale`; if unobtainable, `data gap` (see Data-quality markers).
 - Output the usual Sentiment + Confidence (HIGH/MED/LOW) so it feeds Step 3 unchanged.
 
 ## Step 3 — Signal
