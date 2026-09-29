@@ -108,10 +108,10 @@ For each block (and each tier of block 6), combine `PRICES` 1D% with news sentim
 
 | Condition | Signal |
 |-----------|--------|
-| BEARISH (HIGH/MED) **OR** 1D% ≤ −3% **OR** thesis-breaking news | 🔴 REVIEW |
-| NEUTRAL **OR** BULLISH-LOW **OR** −3% < 1D% ≤ −1% **OR** notable but unclear-impact news | 🟡 WATCH |
-| BULLISH (HIGH/MED) **AND** 1D% > −1% **AND** no new material risk | 🟢 HOLD/ADD |
-| price N/A **and** no news | 🟡 WATCH (note data gap) |
+| BEARISH (HIGH/MED) **OR** 1D% ≤ −3% **OR** thesis-breaking news | 🔴 DOWN |
+| NEUTRAL **OR** BULLISH-LOW **OR** −3% < 1D% ≤ −1% **OR** notable but unclear-impact news | 🟡 FLAT |
+| BULLISH (HIGH/MED) **AND** 1D% > −1% **AND** no new material risk | 🟢 UP |
+| price N/A **and** no news | 🟡 FLAT (note data gap) |
 
 If 1D% is N/A, weight sentiment alone and note the gap.
 Then pick one **Focus today**: the single asset most likely to need attention, with a one-line reason.
@@ -134,7 +134,7 @@ Write the file to `reports/{YYYY-MM-DD}-brief.md` with exactly this structure:
 {one row per ticker, ordered by the universe blocks 1→12; block 6 grouped by tier.
 Bad data uses the markers `stale` / `data gap` in the affected cell — never blank.}
 
-Signal legend: 🟢 HOLD/ADD · 🟡 WATCH · 🔴 REVIEW · data: `No material news.` / `stale` / `data gap`
+Signal legend: 🟢 UP · 🟡 FLAT · 🔴 DOWN · data: `No material news.` / `stale` / `data gap`
 
 ## 🔍 Analysis by theme
 {One subsection per block, in universe order. Prices already shown above — do NOT repeat
