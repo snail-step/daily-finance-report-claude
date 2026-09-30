@@ -33,7 +33,7 @@ The desktop workflow preserves the original research rules and report history. N
 
 Each run reads `routines/brief/instructions.md`, fetches current prices and news, writes `reports/YYYY-MM-DD-brief.md`, commits that report, and pushes `main`. It skips only the news report if that date's brief already exists; the momentum report is checked independently.
 
-Run `./scripts/setup-local.sh` once in the checkout to select the `snail-step` GitHub SSH identity and repo-local commit author. Keep the Mac awake, connected, and the app running during scheduled execution.
+Configure the checkout's Git remote and author locally with the `snail-step` identity. Keep the Mac awake, connected, and the app running during scheduled execution.
 
 ## Two independent daily reports
 
